@@ -1,129 +1,132 @@
+<?php
+session_start();
+require_once 'class.user.php';
+$user_login = new USER();
+$stmt = $user_login->runQuery("SELECT * FROM users WHERE userID=:uid");
+$stmt->execute(array(":uid"=>$_SESSION['userSession']));
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Responsive Bootstrap Portfolio Template developed by winlet">
-    <meta name="author" content="Stella letting">
-    <title>Attachment system</title>
-    <link rel="stylesheet" href="css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,800,700,300' rel='stylesheet' type='text/css'>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Attachment System</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-      <script src="js/html5shiv.js"></script>
-      <script src="js/respond.min.js"></script>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
 </head>
 
-<body>
-    <!-- ====================================================
-	header section -->
-    <header class="top-header">
-        <div class="container">
-            <div class="row header-row">
-                <div class="col-md-12">
-                    <nav class="navbar navbar-default">
-                        <a href="index.html"><img src="img/logo.png" alt="" class="logo"></a>
-                        <div class="container-fluid">
-                            <!-- Brand and toggle get grouped for better mobile display -->
-                            <div class="navbar-header">
-                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
-                            </div>
-                            <!-- Collect the nav links, forms, and other content for toggling -->
-                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<body id="page-top">
 
-                                <ul class="nav navbar-nav navbar-right">
-                                    <li><a href="index.php">Home</a></li>
-                                    <li><a href="home.php">For attaches</a></li>
-                                    
-<li >
-    
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-      Opportunities <span class="caret"></span>
-    </a>
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">Saps</a>
+            </div>
 
-    <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Student</a><br>
-        <a class="dropdown-item" href="#">Employers</a><br>
-        <a class="dropdown-item" href="#">Supervisors</a>
-        <div class="dropdown-divider"></div>
-        <a href="opps.php">back</a>
-    </div>
-</li>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                      <?php if($user_login->is_logged_in()!="")
+                              {
+                      ?>
+                      <a class="page-scroll" href="login.php"><?php echo $row['userName']?></a>
+                      <?php
+                            } else {
+                       ?>
+                       <a class="page-scroll" href="login.php">Log in</a>
+                       <?php
+                            }
+                        ?>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
 
-                                    <li><a href="co.php">Companies</a></li>
-                                    <li><a href="down.php">Downloads</a></li>
-                                    <li><a href="media.php">Media Centre</a></li>
-                                </ul>
-                            </div>
-                            
-                            <!-- /.navbar-collapse -->
-                        </div>
-                        <!-- /.container-fluid -->
-                    </nav>
-                </div>
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <h1 id="homeHeading">Getting attachments has never been easier!</h1>
+                <hr>
+                <p>Get attached with companies. Expand your skills and orpotunities just by a click!</p>
+                <a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
             </div>
         </div>
     </header>
-<a href="login.php" class="btn btn-success" role="button" align="right">Login</a>
-    <!-- banner area starts here -->
-    <section class="banner text-center" id="sec1">
-        <div class="container">
-            <div class="col-lg-12 form1">
-                <h4>Platform for attachment placement opportunities</h4>
-                <br>
-                <p>Saps connects students with the companies that offers attachments.students may also be absorbed to work in companies for job opprtunity</p><br>
-                <a href="more.php">More Infor here</a>
-                <br>
-                <br>
-                <a href="login.php" class="btn btn-success" role="button" align="centre">Login</a>
-                <!--<button class="know-more">Login</button>-->
-                </div>
-                <div class="col-lg-6">
 
-                </div>
-            </div>
-    </section>
-    <!-- end of banner section -->
 
-    <section class="contact-form">
+    <section id="contact">
         <div class="container">
             <div class="row">
-                <div class="form">
-                    <form action="contact.php">
-                        <div class="sbtn col-md-12 text-center">
-                               <h4>CONTACT US</h4>
-                            <input class="name form-input" type="text" placeholder="NAME">
-                            <input class="email form-input" type="email" placeholder="EMAIL">
-                            <input class="message form-input" type="text" placeholder="MASSAGE">
-                            <input class="submit-btn" type="submit">
-                        </div>
-                    </form>
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">Let's Get In Touch!</h2>
+                    <hr class="primary">
+                    <p>Interested in marketing with us? Give us a call or send us an email and we will get back to you as soon as possible!</p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fa fa-phone fa-3x sr-contact"></i>
+                    <p>+254712991415</p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fa fa-facebook-square fa-3x sr-contact"></i>
+                    <p><a href="#">Saps</a></p>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <i class="fa fa-envelope-o fa-3x sr-contact"></i>
+                    <p><a href="mailto:#">Saps</a></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- footer starts here -->
-    <footer class="footer text-center">
-        <p>Copyright: &copy; <a href="http://winlet">winlet</a> | All rights reserved</p>
-    </footer>
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
 
-    <!-- script tags
-	============================================================= -->
-    <script src="js/jquery-2.1.1.js"></script>
-    <script src="js/smoothscroll.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/custom.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="vendor/scrollreveal/scrollreveal.min.js"></script>
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="js/creative.min.js"></script>
+
 </body>
-
 </html>

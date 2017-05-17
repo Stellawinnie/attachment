@@ -6,7 +6,16 @@ $reg_user = new USER();
 
 if($reg_user->is_logged_in()!="")
 {
- $reg_user->redirect('home.php');
+  $stmt = $reg_user->runQuery("SELECT * FROM users WHERE userID=:uid");
+  $stmt->execute(array(":uid"=>$_SESSION['userSession']));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if($row['loginType']=="admin"){
+    $reg_user->redirect('adminhome.php');
+  } else if ($row['loginType']=="company"){
+    $user_login->redirect('companyhome.php');
+  } else{
+    $reg_user->redirect('home.php');
+  }
 }
 
 
@@ -16,16 +25,17 @@ if(isset($_POST['btn-signup']))
  $email = trim($_POST['txtemail']);
  $upass = trim($_POST['txtpass']);
  $uphone = trim($_POST['txtphone']);
+ $urole = trim($_POST['txtrole']);
  $code = md5(uniqid(rand()));
 
- $stmt = $reg_user->runQuery("SELECT * FROM data WHERE userEmail=:email_id");
+ $stmt = $reg_user->runQuery("SELECT * FROM users WHERE userEmail=:email_id");
  $stmt->execute(array(":email_id"=>$email));
  $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
  if($stmt->rowCount() > 0)
  {
   $msg = "
-        <div class='alert alert-error'>
+        <div class='alert alert-danger'>
     <button class='close' data-dismiss='alert'>&times;</button>
      <strong>Sorry !</strong>  email already exists , Please Try another one
      </div>
@@ -33,7 +43,7 @@ if(isset($_POST['btn-signup']))
  }
  else
  {
-  if($reg_user->register($uname,$email,$upass,$uphone,$code))
+  if($reg_user->register($uname,$email,$upass,$uphone,$urole,$code))
   {
    $id = $reg_user->lasdID();
    $key = base64_encode($id);
@@ -41,28 +51,27 @@ if(isset($_POST['btn-signup']))
    require 'PHPMailer/PHPMailerAutoload.php';
    $mail = new PHPMailer;
    $mail->isSMTP();
-   $mail->SMTPDebug = 2;
    $mail->SMTPSecure = 'tls';
    $mail->SMTPAuth = true;
    $mail->Host = 'smtp.gmail.com';
    $mail->Port = 587;
-   $mail->Username = 'beja.emmanuel@gmail.com';
-   $mail->Password = '#1Emmcodes';
-   $mail->setFrom('DoNotReply@gmail.com');
+   $mail->Username = 'yourgmailemail@gmail.com';
+   $mail->Password = 'yourgmailpassword';
+   $mail->setFrom('DoNotReply@gmail.com', 'Saps');
    $mail->addAddress($email);
-   $mail->Subject = 'your subject';
+   $mail->Subject = 'Saps! Confirm Registration';
    $mail->Body = " Hello $uname,
-   Welcome !
+   Welcome to Saps!
    To complete your registration, please click on the link bellow
-   http://localhost/attachments/verify.php?id=$id&code=$code
+   http://localhost:8080/Stela/verify.php?id=$id&code=$code
 
    Thanks,";
    //send the message, check for errors
    if (!$mail->send()) {
      $msg = "
-       <div class='alert alert-error'>
+       <div class='alert alert-danger'>
         <button class='close' data-dismiss='alert'>&times;</button>
-        <strong>Sorry!</strong>Couldnt send email to $email.
+        <strong>Error!</strong>  Couldnt send email to $email.
                       Please try again.
          </div>
        ";
@@ -83,40 +92,115 @@ if(isset($_POST['btn-signup']))
 }
 ?>
 <!DOCTYPE html>
-<html>
-  <head>
-    <title></title>
-    <!-- Bootstrap -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="assets/styles.css" rel="stylesheet" media="screen">
-     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-  </head>
-  <body id="login">
-    <div class="container">
-    <?php if(isset($msg)) echo $msg;  ?>
-      <form class="form-signin" method="post">
-        <h2 class="form-signin-heading">Sign Up</h2><hr />
-        <label>User Name.</label></br>
-        <input type="text" class="input-block-level" placeholder="Username" name="txtuname" required /></br>
-        <label>Email.</label></br>
-        <input type="email" class="input-block-level" placeholder="Email address" name="txtemail" required /></br>
-        <label>Phone Number.</label></br>
-        <input type="text" class="input-block-level" placeholder="Phone number" name="txtphone" required /></br>
-        <label>Password.</label></br>
-        <input type="password" class="input-block-level" placeholder="Password" name="txtpass" required />
-      <hr />
-        <button class="btn btn-large btn-primary" type="submit" name="btn-signup">Sign Up</button>
-        <a href="index.php" style="float:right;" class="btn btn-large">Sign In</a>
-        <a href="login.php" class="btn btn-info" role="button">Login</a>
-      </form>
+<html lang="en">
 
-    </div> <!-- /container -->
-    <script src="vendors/jquery-1.9.1.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-  </body>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Signup|Saps</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+
+
+          <!-- Navigation -->
+          <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+              <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                      <span class="sr-only">Toggle navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="index.php">Saps</a>
+              </div>
+              <!-- /.navbar-header -->
+
+              <ul class="nav navbar-top-links navbar-right">
+                <li>
+                  <a class="navbar-brand" href="login.php">Login</a>
+                </li>
+              </ul>
+              <!-- /.navbar-top-links -->
+              <!-- /.navbar-static-side -->
+          </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Signup</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" method="post">
+                            <fieldset>
+                              <?php if(isset($msg)) echo $msg;  ?>
+                              <div class="form-group">
+                                  <input class="form-control" placeholder="Username" name="txtuname"  autofocus required>
+                              </div>
+                              <div class="form-group">
+                                  <input class="form-control" placeholder="E-mail" name="txtemail" type="email" required>
+                              </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Phone number" name="txtphone" required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="txtpass" type="password" value="" required>
+                                </div>
+                                <div class="form-group">
+                                    <select name="txtrole" class="form-control">
+                                    <option value="user">User</option>
+                                    <option value="company">Company.</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-lg btn-success btn-block" type="submit" name="btn-signup">Signup</button></br>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="dist/js/sb-admin-2.js"></script>
+
+</body>
+
 </html>

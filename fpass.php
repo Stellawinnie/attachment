@@ -5,14 +5,23 @@ $user = new USER();
 
 if($user->is_logged_in()!="")
 {
- $user->redirect('home.php');
+  $stmt = $user->runQuery("SELECT * FROM users WHERE userID=:uid");
+  $stmt->execute(array(":uid"=>$_SESSION['userSession']));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if($row['loginType']=="admin"){
+    $user->redirect('adminhome.php');
+  }else if ($row['loginType']=="company"){
+    $user_login->redirect('companyhome.php');
+  } else {
+    $user->redirect('home.php');
+  };
 }
 
 if(isset($_POST['btn-submit']))
 {
  $email = $_POST['txtemail'];
 
- $stmt = $user->runQuery("SELECT userID FROM data WHERE userEmail=:email LIMIT 1");
+ $stmt = $user->runQuery("SELECT userID FROM users WHERE userEmail=:email LIMIT 1");
  $stmt->execute(array(":email"=>$email));
  $row = $stmt->fetch(PDO::FETCH_ASSOC);
  if($stmt->rowCount() == 1)
@@ -20,7 +29,7 @@ if(isset($_POST['btn-submit']))
   $id = base64_encode($row['userID']);
   $code = md5(uniqid(rand()));
 
-  $stmt = $user->runQuery("UPDATE data SET tokenCode=:token WHERE userEmail=:email");
+  $stmt = $user->runQuery("UPDATE users SET tokenCode=:token WHERE userEmail=:email");
   $stmt->execute(array(":token"=>$code,"email"=>$email));
 
   require 'PHPMailer/PHPMailerAutoload.php';
@@ -30,15 +39,15 @@ if(isset($_POST['btn-submit']))
   $mail->SMTPAuth = true;
   $mail->Host = 'smtp.gmail.com';
   $mail->Port = 587;
-  $mail->Username = 'beja.emmanuel@gmail.com';
-  $mail->Password = '#1Emmcodes';
-  $mail->setFrom('DoNotReply@gmail.com');
+  $mail->Username = 'yourgmail mail@gmail.com';
+  $mail->Password = 'yourgmailpassword';
+  $mail->setFrom('DoNotReply@gmail.com', 'Saps');
   $mail->addAddress($email);
-  $mail->Subject = 'Your subject';
+  $mail->Subject = 'Saps! Reset password';
   $mail->Body = "Hello $email,
   We got a request to reset your password.
   Click Following Link To Reset Your Password if you sent the request.
-  http://localhost/php_login_signup/resetpass.php?id=$id&code=$code
+  http://localhost:8080/stela/resetpass.php?id=$id&code=$code
 
   Thanks,";
   //send the message, check for errors
@@ -46,7 +55,7 @@ if(isset($_POST['btn-submit']))
     $msg = "
       <div class='alert alert-danger'>
        <button class='close' data-dismiss='alert'>&times;</button>
-       <strong>Success!</strong>  Could'nt send email to $email.
+       <strong>Error!</strong>  Could'nt send email to $email.
                      Please try again.
         </div>
       ";
@@ -73,15 +82,39 @@ if(isset($_POST['btn-submit']))
   <head>
     <title>Forgot Password</title>
     <!-- Bootstrap -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="assets/styles.css" rel="stylesheet" media="screen">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="vendor/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="vendor/assets/styles.css" rel="stylesheet" media="screen">
      <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
   <body id="login">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.php">Saps</a>
+        </div>
+        <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right">
+          <li>
+            <a  href="login.php">Login</a>
+          </li>
+          <li>
+            <a  href="signup.php">Signup</a>
+          </li>
+        </ul>
+        <!-- /.navbar-top-links -->
+        <!-- /.navbar-static-side -->
+    </nav>
     <div class="container">
 
       <form class="form-signin" method="post">
@@ -108,7 +141,7 @@ if(isset($_POST['btn-submit']))
       </form>
 
     </div> <!-- /container -->
-    <script src="bootstrap/js/jquery-1.9.1.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/bootstrap/js/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
