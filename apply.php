@@ -50,8 +50,8 @@ if(isset($_POST['save']) && isset($_FILES['uploaded_file']) && $_FILES['uploaded
         $mail->SMTPAuth = true;
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 587;
-        $mail->Username = 'beja.emmanuel@gmail.com';
-        $mail->Password = '#1Emmcodes';
+        $mail->Username = 'yourgmailmail@gmail.com';
+        $mail->Password = 'yourgmailpassword';
         $mail->AddAttachment($allfiles);
         $mail->setFrom('DoNotReply@gmail.com', 'Saps');
         $mail->addAddress($companyemail);
@@ -91,8 +91,8 @@ if(isset($_POST['save']) && isset($_FILES['uploaded_file']) && $_FILES['uploaded
         $mail->SMTPAuth = true;
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 587;
-        $mail->Username = 'beja.emmanuel@gmail.com';
-        $mail->Password = '#1Emmcodes';
+        $mail->Username = 'yourgmailmail@gmail.com';
+        $mail->Password = 'yourgmailpassword';
         $mail->AddAttachment($_FILES['uploaded_file']['tmp_name'], $_FILES['uploaded_file']['name']);
         $mail->setFrom('DoNotReply@gmail.com', 'Saps');
         $mail->addAddress($companyemail);
@@ -359,7 +359,7 @@ if(isset($_POST['editpic'])){
 
                                                             <div class="form-group">
                                                               <label for="applicationLetter">Application Letter</label>
-                                                               <input type="file" name="applicationLetter" id="applicationLetter"/>
+                                                               <input type="hidden" name="applicationLetter" id="applicationLetter"/>
                                                             </div>
 
                                                             <div class="form-group">
