@@ -1,80 +1,152 @@
 <?php
-   include("config.php");
-   session_start();
-   
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
-      // username and password sent from form 
-      
-      $myusername = mysqli_real_escape_string($db,$_POST['username']);
-      $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
-      
-      $sql = "SELECT id FROM users WHERE username = '$myusername' and password = '$mypassword'";
-      $result = mysqli_query($db,$sql);
-      $row = mysqli_fetch_assoc($result);
-      $active = $row['active'];
-      
-      $count = mysqli_num_rows($result);
-      
-      // If result matched $myusername and $mypassword, table row must be 1 row
-		
-      if($count == 1) {
-         session_register("myusername");
-         $_SESSION['login_user'] = $myusername;
-         
-         header("location: index.php");
-      }else {
-         $error = "Your Login Name or Password is invalid";
-      }
-   }
+session_start();
+require_once 'class.user.php';
+$user_login = new USER();
+if($user_login->is_logged_in()!="")
+{
+  $stmt = $user_login->runQuery("SELECT * FROM users WHERE userID=:uid");
+  $stmt->execute(array(":uid"=>$_SESSION['userSession']));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if($row['loginType']=="admin"){
+    $user_login->redirect('adminhome.php');
+  }else if ($row['loginType']=="company"){
+    $user_login->redirect('companyhome.php');
+  }else{
+    $user_login->redirect('home.php');
+  };
+}
+
+if(isset($_POST['btn-login']))
+{
+ $email = trim($_POST['txtemail']);
+ $upass = trim($_POST['txtupass']);
+
+ if($user_login->login($email,$upass))
+ {
+  #$user_login->redirect('home.php');
+ }
+}
 ?>
-<html>
-   
-   <head Aunthetication page>
-      <title>Login Page</title>
-      
-      <style type = "text/css">
-         body {
-            font-family:Arial, Helvetica, sans-serif;
-            font-size:14px;
-         }
-         
-         label {
-            font-weight:bold;
-            width:100px;
-            font-size:14px;
-         }
-         
-         .box {
-            border:#666666 solid 1px;
-         }
-      </style>
-      
-   </head>
-   
-   <body bgcolor = "#FFFFFF">
 
+<!DOCTYPE html>
+<html lang="en">
 
-	
-      <div align = "center">
-         <div style = "width:300px; border: solid 10px #000000; " align = "left">
-            <div style = "background-color:#00FFFF; color:#008000; padding:40px;"><b>SAPS Authentication Service</b></div>
-				
-            <div style = "margin:30px">
-               
-               <form action = "" method = "post">
-                  <label>UserName  :</label><input type = "text" name = "username" class = "box"/><br /><br />
-                  <label>Password  :</label><input type = "password" name = "password" class = "box" /><br/><br />
-                  <input type = "submit" value = " Login "/><br />
-                  <a href="login.php" class="btn btn-success" role="button" align="centre">Logout</a>
-               </form>
-               <a href="signup.php" class="btn btn-info" role="button">Signup</a>
-               <!--<div style = "font-size:11px; color:#cc0000; margin-top:10px"><?php echo $error; ?></div> -->
-					
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Login|Saps</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+          <!-- Navigation -->
+          <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+              <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                      <span class="sr-only">Toggle navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="index.php">Saps</a>
+              </div>
+              <!-- /.navbar-header -->
+
+              <ul class="nav navbar-top-links navbar-right">
+                <li>
+                  <a class="navbar-brand" href="signup.php">Signup</a>
+                </li>
+              </ul>
+              <!-- /.navbar-top-links -->
+              <!-- /.navbar-static-side -->
+          </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Sign In</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" method="post">
+                            <fieldset>
+                              <?php
+                              if(isset($_GET['inactive']))
+                              {
+                               ?>
+                                <div class='alert alert-danger'>
+                                <button class='close' data-dismiss='alert'>&times;</button>
+                                <strong>Sorry!</strong> This Account is not Activated Go to your Inbox and Activate it.Click resend email if you didn't recieve an email.
+                               </div>
+                              <?php
+                              }
+                              ?>
+                              <?php
+                                    if(isset($_GET['error']))
+                              {
+                               ?>
+                                <div class='alert alert-danger'>
+                                <button class='close' data-dismiss='alert'>&times;</button>
+                                <strong>Wrong Details!</strong>
+                               </div>
+                              <?php
+                              }
+                              ?>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="E-mail" name="txtemail" type="email" autofocus required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="txtupass" type="password" value="" required>
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <button class="btn btn-lg btn-success btn-block" type="submit" name="btn-login">Login</button></br>
+                                <a href="fpass.php">Forgot your Password ? </a></br>
+                                <a href="emailfail.php">Didn't recieve email?</a>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
             </div>
-				
-         </div>
-			
-      </div>
+        </div>
+    </div>
 
-   </body>
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="dist/js/sb-admin-2.js"></script>
+
+</body>
+
 </html>

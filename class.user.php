@@ -1,6 +1,6 @@
 <?php
 
-require_once 'config.php';
+require_once 'dbconfig.php';
 
 class USER
 {
@@ -26,17 +26,18 @@ class USER
   return $stmt;
  }
 
- public function register($uname,$email,$upass,$uphone,$code)
+ public function register($uname,$email,$upass,$uphone,$urole,$code)
  {
   try
   {
    $password = md5($upass);
-   $stmt = $this->conn->prepare("INSERT INTO data(userName,userEmail,userPass,userPhone,tokenCode)
-                                                VALUES(:user_name, :user_mail, :user_pass, :user_phone, :active_code)");
+   $stmt = $this->conn->prepare("INSERT INTO users(userName,userEmail,userPass,userPhone,loginType,tokenCode)
+                                                VALUES(:user_name, :user_mail, :user_pass, :user_phone,:user_type, :active_code)");
    $stmt->bindparam(":user_name",$uname);
    $stmt->bindparam(":user_mail",$email);
    $stmt->bindparam(":user_pass",$password);
    $stmt->bindparam(":user_phone",$uphone);
+   $stmt->bindparam(":user_type",$urole);
    $stmt->bindparam(":active_code",$code);
    $stmt->execute();
    return $stmt;
@@ -51,9 +52,10 @@ class USER
  {
   try
   {
-   $stmt = $this->conn->prepare("SELECT * FROM data WHERE userEmail=:email_id");
+   $stmt = $this->conn->prepare("SELECT * FROM users WHERE userEmail=:email_id");
    $stmt->execute(array(":email_id"=>$email));
    $userRow=$stmt->fetch(PDO::FETCH_ASSOC);
+   //$type = $userRow['loginType'];
 
    if($stmt->rowCount() == 1)
    {
@@ -61,24 +63,35 @@ class USER
     {
      if($userRow['userPass']==md5($upass))
      {
-      $_SESSION['userSession'] = $userRow['userID'];
-      return true;
+       if($userRow['loginType']=="admin"){
+         $_SESSION['userSession'] = $userRow['userID'];
+         echo "<script>window.location.assign('adminhome.php')</script>";
+       } else if ($userRow['loginType']=="company"){
+         $_SESSION['userSession'] = $userRow['userID'];
+         echo "<script>window.location.assign('companyhome.php')</script>";
+       } else{
+         $_SESSION['userSession'] = $userRow['userID'];
+         echo "<script>window.location.assign('home.php')</script>";
+       }
      }
      else
      {
-      header("Location: index.php?error");
+      header("Location: login.php?error");
+      echo "Wrong password";
       exit;
      }
     }
     else
     {
-     header("Location: index.php?inactive");
+     header("Location: login.php?inactive");
+     echo "your account is not activated.Try resend email option";
      exit;
     }
    }
    else
    {
-    header("Location: index.php?error");
+    header("Location: login.php?error");
+    echo "No user found";
     exit;
    }
   }
@@ -121,8 +134,8 @@ class USER
   $mail->AddAddress($email);
   $mail->Username="yourgmailid@gmail.com";
   $mail->Password="yourgmailpassword";
-  $mail->SetFrom('you@yourdomain.com','Coding Cage');
-  $mail->AddReplyTo("you@yourdomain.com","Coding Cage");
+  $mail->SetFrom('you@yourdomain.com','');
+  $mail->AddReplyTo("you@yourdomain.com","");
   $mail->Subject    = $subject;
   $mail->MsgHTML($message);
   $mail->Send();
