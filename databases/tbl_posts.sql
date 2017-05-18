@@ -1,9 +1,0 @@
-CREATE TABLE `tbl_posts` (
-  `id` int(11) NOT NULL,
-  `companyName` varchar(100) NOT NULL,
-  `companyEmail` varchar(100) NOT NULL,
-  `companyPhone` int(12) DEFAULT NULL,
-  `detail` varchar(300) DEFAULT NULL,
-  `number` int(12) DEFAULT NULL,
-  `postTime` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
