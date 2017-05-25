@@ -39,15 +39,15 @@ if(isset($_POST['btn-submit']))
   $mail->SMTPAuth = true;
   $mail->Host = 'smtp.gmail.com';
   $mail->Port = 587;
-  $mail->Username = 'yourgmailmail@gmail.com';
-  $mail->Password = 'yourgmailpassword';
+  $mail->Username = 'beja.emmanuel@gmail.com';
+  $mail->Password = '#1Emmcodes';
   $mail->setFrom('DoNotReply@gmail.com', 'Saps');
   $mail->addAddress($email);
   $mail->Subject = 'Saps Account confirmation';
   $mail->Body = "Hello $email,
   We got a request to resend you an confirmation email.
   Click Following Link To activate Your account if you sent the request.
-  http://localhost:8080/stela/resendemail.php?id=$id&code=$code
+  http://localhost/attachment/resendemail.php?id=$id&code=$code
 
   Thanks,";
   //send the message, check for errors

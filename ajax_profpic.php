@@ -1,7 +1,7 @@
 <?php
 global $con;
 
-$con = mysqli_connect('localhost','root','12345678','attachment');
+$con = mysqli_connect('localhost','root','','attachment');
 
 if(!$con)
 {
@@ -15,7 +15,7 @@ $validextensions = array("jpeg", "jpg", "png", "JPEG", "JPG", "PNG");
 $temporary = explode(".", $_FILES["file"]["name"]);
 $file_extension = end($temporary);
 if ((($_FILES["file"]["type"] == "image/png") || ($_FILES["file"]["type"] == "image/JPG") || ($_FILES["file"]["type"] == "image/jpeg")
-) && ($_FILES["file"]["size"] < 10000000)//Approx. 100000=100kb files can be uploaded.
+) && ($_FILES["file"]["size"] < 100000000)//Approx. 100000=100kb files can be uploaded.
 && in_array($file_extension, $validextensions)) {
 if ($_FILES["file"]["error"] > 0) {
 echo "Return Code: " . $_FILES["file"]["error"] . "<br/><br/>";

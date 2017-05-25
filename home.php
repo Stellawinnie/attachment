@@ -12,7 +12,7 @@ $stmt = $user_home->runQuery("SELECT * FROM users WHERE userID=:uid");
 $stmt->execute(array(":uid"=>$_SESSION['userSession']));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$conn = mysqli_connect("localhost", "root", "12345678", "attachment");
+$conn = mysqli_connect("localhost", "root", "", "attachment");
 
 
 if(isset($_GET['category']))
@@ -89,7 +89,7 @@ if(isset($_POST['editpic'])){
                   Categories <i class="fa fa-caret-down"></i>
               </a>
               <ul class="dropdown-menu dropdown-user">
-                  <li><a href="?category=Business"><i class="fa fa-book fa-fw"></i> Businesss</a>
+                  <li><a href="?category=Bussiness"><i class="fa fa-book fa-fw"></i> Businesss</a>
                   </li>
                   <li><a href="?category=Arts"><i class="fa fa-book fa-fw"></i> Arts</a>
                   </li>
@@ -200,22 +200,7 @@ if(isset($_POST['editpic'])){
                                 $dee = $rows['postId'];
                                 $respo =  $conn->query("SELECT * FROM tbl_posts WHERE id='$dee'");
                                 $ros=$respo->fetch_array();
-
-                                if($rows['sent']=='No'){?>
-                                  <a href="?apply=<?php echo $ros['id']; ?>" class="list-group-item">
-                                    <i class="fa fa-user fa-fw"></i><?php echo $rows['companyName']; ?><br>
-                                    <i class="fa fa-briefcase fa-fw"></i><?php echo $ros['level']; ?>
-                                    <i class="fa fa-book fa-fw"><?php echo $ros['category']; ?></i><br>
-                                    <i class="fa fa-file-text-o fa-fw"></i><?php echo $ros['detail']; ?><br>
-                                    <i class="fa  fa-fw text-muted fa-clock-o fa-fw"><?php echo $rows['postTime']; ?></i><br>
-                                  </a>
-                                  <div class='alert alert-danger'>
-                                  <button class='close' data-dismiss='alert'>&times;</button>
-                                   You tried applying for this post but sending of your email to the company failed.
-                                   Kindly try again.
-                                 </div>
-                                  <?php
-                                }else{?>
+                              ?>
                                   <span class="list-group-item">
                                     <i class="fa fa-user fa-fw"></i><?php echo $rows['companyName']; ?><br>
                                     <i class="fa fa-briefcase fa-fw"></i><?php echo $ros['level']; ?>
@@ -223,9 +208,7 @@ if(isset($_POST['editpic'])){
                                     <i class="fa fa-file-text-o fa-fw"></i><?php echo $ros['detail']; ?><br>
                                     <i class="fa  fa-fw text-muted fa-clock-o fa-fw"><?php echo $rows['postTime']; ?></i><br>
                                   </span>
-                                  <?php
-                                }
-                                ?>
+                                 
 
                               <?php } ?>
                             </div>

@@ -5,7 +5,7 @@ class Database
     private $host = "localhost";
     private $db_name = "attachment";
     private $username = "root";
-    private $password = "12345678";
+    private $password = "";
     public $conn;
 
     public function dbConnection()

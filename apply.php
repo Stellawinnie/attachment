@@ -12,7 +12,7 @@ $stmt = $user_home->runQuery("SELECT * FROM users WHERE userID=:uid");
 $stmt->execute(array(":uid"=>$_SESSION['userSession']));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$conn = mysqli_connect("localhost", "root", "12345678", "attachment");
+$conn = mysqli_connect("localhost", "root", "", "attachment");
 
 $msg = "";
 if(isset($_GET['category']))
@@ -41,58 +41,16 @@ if(isset($_POST['save']) && isset($_FILES['uploaded_file']) && $_FILES['uploaded
 
     require 'PHPMailer/PHPMailerAutoload.php';
 
-      if(isset($_FILES['attachmentLetter']) && $_FILES['attachmentLetter']['error'] === UPLOAD_ERR_OK){
 
-        $allfiles = array($_FILES['uploaded_file'], $_FILES['attachmentLetter']);
+        $allfiles = $_FILES['uploaded_file'];
         $mail = new PHPMailer;
         $mail->isSMTP();
         $mail->SMTPSecure = 'tls';
         $mail->SMTPAuth = true;
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 587;
-        $mail->Username = 'yourgmailmail@gmail.com';
-        $mail->Password = 'yourgmailpassword';
-        $mail->AddAttachment($allfiles);
-        $mail->setFrom('DoNotReply@gmail.com', 'Saps');
-        $mail->addAddress($companyemail);
-        $mail->Subject = 'Saps! Application';
-        $mail->Body = " Hello $companyName,
-        $userName has just applied for the position you posted.Bellow are his/her application credentials and acompanying documents.
-        Applicant Email: $userEmail
-        Applicant Phone: 0$userPhone
-        About: $about
-
-        Thank you for using Saps,";
-
-        //send the message, check for errors
-        if (!$mail->send()) {
-          $msg = "
-            <div class='alert alert-danger'>
-             <button class='close' data-dismiss='alert'>&times;</button>
-             <strong>Error!</strong>  Couldnt send email to $companyemail.
-                           Please try again later.
-              </div>
-            ";
-            $sent="No";
-        } else {
-          $msg = "
-            <div class='alert alert-success'>
-             <button class='close' data-dismiss='alert'>&times;</button>
-             <strong>Success!</strong>  We've sent an email of your application to $companyemail.
-             Kindly wait for them to get back to you.
-              </div>
-            ";
-            $sent="Yes";
-        }
-      } else{
-        $mail = new PHPMailer;
-        $mail->isSMTP();
-        $mail->SMTPSecure = 'tls';
-        $mail->SMTPAuth = true;
-        $mail->Host = 'smtp.gmail.com';
-        $mail->Port = 587;
-        $mail->Username = 'yourgmailmail@gmail.com';
-        $mail->Password = 'yourgmailpassword';
+        $mail->Username = 'stellawinnie12@gmail.com';
+        $mail->Password = 'jepchumba2';
         $mail->AddAttachment($_FILES['uploaded_file']['tmp_name'], $_FILES['uploaded_file']['name']);
         $mail->setFrom('DoNotReply@gmail.com', 'Saps');
         $mail->addAddress($companyemail);
@@ -120,15 +78,15 @@ if(isset($_POST['save']) && isset($_FILES['uploaded_file']) && $_FILES['uploaded
             <div class='alert alert-success'>
              <button class='close' data-dismiss='alert'>&times;</button>
              <strong>Success!</strong>  We've sent an email of your application to $companyemail.
-             On your next application, kindly attach an application letter too.
              Kindly wait for them to get back to you.
               </div>
             ";
             $sent="Yes";
         }
-      }
+       
 
     $respCheck = $conn->query("SELECT * FROM tbl_applicants WHERE userName='$userName' AND postId='$postId'");
+    $RowCheck=$respCheck->fetch_array();
     if($RowCheck=$respCheck->fetch_array()){
       $idApplicant = $RowCheck['id'];
       $QL = $conn->prepare("DELETE FROM tbl_applicants WHERE id='$idApplicant'");
@@ -353,14 +311,10 @@ if(isset($_POST['editpic'])){
                                                             </div>
 
                                                             <div class="form-group">
-                                                              <label for="uploaded_file">CV</label>
+                                                              <label for="uploaded_file">Application Letter</label>
                                                                <input type="file" name="uploaded_file" id="uploaded_file"/>
                                                             </div>
 
-                                                            <div class="form-group">
-                                                              <label for="applicationLetter">Application Letter</label>
-                                                               <input type="hidden" name="applicationLetter" id="applicationLetter"/>
-                                                            </div>
 
                                                             <div class="form-group">
                                                                 <input type="hidden" id="postTime" name="postTime" placeholder="" class="form-control"/>

@@ -2,9 +2,7 @@
 session_start();
 require_once 'class.user.php';
 $user_login = new USER();
-$stmt = $user_login->runQuery("SELECT * FROM users WHERE userID=:uid");
-$stmt->execute(array(":uid"=>$_SESSION['userSession']));
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,6 +58,9 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
                     <li>
                       <?php if($user_login->is_logged_in()!="")
                               {
+                                $stmt = $user_login->runQuery("SELECT * FROM users WHERE userID=:uid");
+$stmt->execute(array(":uid"=>$_SESSION['userSession']));
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
                       ?>
                       <a class="page-scroll" href="login.php"><?php echo $row['userName']?></a>
                       <?php
@@ -99,7 +100,7 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
                 <div class="col-lg-4 text-center">
                     <i class="fa fa-phone fa-3x sr-contact"></i>
-                    <p>+254712991415</p>
+                    <p>+254725305304</p>
                 </div>
                 <div class="col-lg-4 text-center">
                     <i class="fa fa-facebook-square fa-3x sr-contact"></i>
@@ -108,7 +109,7 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 <div class="col-lg-4 text-center">
                     <i class="fa fa-envelope-o fa-3x sr-contact"></i>
-                    <p><a href="mailto:#">Saps</a></p>
+                    <p><a href="mailto:stellawinnie12@gmail.com">Saps</a></p>
                 </div>
             </div>
         </div>

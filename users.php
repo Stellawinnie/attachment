@@ -119,7 +119,7 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
                        </thead>
                        <tbody>
                          <?php
-                         $conn = mysqli_connect("localhost", "root", "12345678", "attachment");
+                         $conn = mysqli_connect("localhost", "root", "", "attachment");
 
                          $query = "SELECT * from users ";
                          $result = mysqli_query($conn, $query);

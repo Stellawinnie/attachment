@@ -28,7 +28,7 @@ header("refresh:0;userProfile.php");
  </div>";
 }
 
-$conn = mysqli_connect("localhost", "root", "12345678", "attachment");
+$conn = mysqli_connect("localhost", "root", "", "attachment");
 
 if(isset($_POST['editpic'])){
   header("Location: userProfile.php");

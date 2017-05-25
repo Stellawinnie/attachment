@@ -12,7 +12,7 @@ $stmt = $user_home->runQuery("SELECT * FROM users WHERE userID=:uid");
 $stmt->execute(array(":uid"=>$_SESSION['userSession']));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$conn = mysqli_connect("localhost", "root", "12345678", "attachment");
+$conn = mysqli_connect("localhost", "root", "", "attachment");
 
 
 if(isset($_GET['category']))
@@ -20,7 +20,10 @@ if(isset($_GET['category']))
   $_SESSION['category']=$_GET['category'];
  header("Location: category.php");
 }
-$cat = $_SESSION['category'];
+
+if(isset($_SESSION['category'])){
+  $cat = $_SESSION['category'];
+}
 
 if(isset($_GET['apply']))
 {

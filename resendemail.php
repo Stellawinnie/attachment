@@ -55,14 +55,14 @@ if(isset($_GET['id']) && isset($_GET['code']))
       $mail->SMTPAuth = true;
       $mail->Host = 'smtp.gmail.com';
       $mail->Port = 587;
-      $mail->Username = 'yourgmailemail@gmail.com';
-      $mail->Password = 'yourgmailpassword';
+      $mail->Username = 'stellawinnie12@gmail.com';
+      $mail->Password = 'jepchumba2';
       $mail->setFrom('DoNotReply@gmail.com', 'Saps');
       $mail->addAddress($email);
       $mail->Subject = 'Saps! Confirm Registration';
       $mail->Body = " Hello $uname,
       To complete your registration, please click on the link bellow
-      http://localhost:8080/Stella/verify.php?id=$id&code=$code
+      http://localhost/attachment/verify.php?id=$id&code=$code
 
       Thanks,";
       //send the message, check for errors
